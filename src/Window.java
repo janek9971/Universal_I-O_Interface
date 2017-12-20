@@ -822,7 +822,7 @@ public class Window {
 	}
 
 	public void setT2Text(String text) {
-		errorlabel.setText(text); //Mateusz
+		errorlabel.setText(text); ///Mateusz
 		System.out.println("Odczytana temperatura: " + text);
 
 	}
