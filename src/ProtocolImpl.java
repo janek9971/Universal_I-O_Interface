@@ -47,7 +47,7 @@ public class ProtocolImpl implements Protocol {
         	if(state==2) {
 				float temp;
 				temp = (bufor[0]+(bufor[1]*256))/16;
-				Wobject.setT2Text(Float.toString(temp));
+				Wobject.setT2Text(Float.toString(temp)); //Mateusz
 				
 				state=0;
 			}

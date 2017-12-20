@@ -9,7 +9,6 @@ import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.DefaultButtonModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -45,8 +44,6 @@ public class Window {
 	private String time;
 	private int state;
 	private int[] buforek = new int[28];
-	private String pomiar;
-	private int liczniczek;
 	private int z = 0;
 	private JLabel lblimage, lblimage2;
 	private final String pinsTab[] = { "23", "26", "27", "28", "29", "30", "14", "15", "31", "32", "33", "8", "22",
@@ -54,11 +51,10 @@ public class Window {
 	private final String pinTabName[] = { "C", "D", "D", "D", "D", "D", "B", "B", "D", "D", "D", "B", "C", "C", "C",
 			"C", "C", "C", "B", "B", "B", "B", "B" };
 	private final String pinTabNumber[] = { "6", "0", "1", "2", "3", "4", "6", "7", "5", "6", "7", "0", "5", "4", "3",
-			"2", "1", "0", "5", "4", "3", "2", "1" };
-;
+			"2", "1", "0", "5", "4", "3", "2", "1" };;
 	private static final String NOT_SELECTABLE_OPTION = " - Select an Option - ", PORT_DIR_ONE = "PORT\\DIR_ONE",
 			PORTS_DIRS_ALL = "PORT\\DIR_ALL", MEAS = "MEASURMENT", NOT_SELECTABLE_SERIAL = " Select Serial Port ";
-	public JTextField errorlabel;
+	private JTextField errorlabel;
 
 	public Window() {
 		initialize();
@@ -88,12 +84,11 @@ public class Window {
 
 		errorlabel = new JTextField("");
 		errorlabel.setBounds(400, 747, 153, 30);
-		// errorlabel.setEnabled(false);
+		errorlabel.setEnabled(false);
 		// errorlabel.setFont(new Font("Serif", Font.PLAIN, 14));
-		// errorlabel.setHorizontalAlignment(SwingConstants.CENTER);
+		// s errorlabel.setHorizontalAlignment(SwingConstants.CENTER);
 		frame.getContentPane().add(errorlabel);
 
-	
 		selectOption = new JTextArea();
 		initializeSelectOption();
 
@@ -141,22 +136,18 @@ public class Window {
 
 		autoButton = new JButton();
 		initializeAutoButton();
-		 lblimage = new JLabel("");
-		 lblimage.setBounds(frame.getWidth() / 2 - 441, frame.getHeight() / 2 - 480,
-		 242, 646);
-		 lblimage.setIcon(new ImageIcon(
-		 "C:\\Users\\Janek\\Desktop\\USARTWindowedApp-master\\USARTWindowedApp-master\\janusz.jpg"));
-		 frame.getContentPane().add(lblimage);
+		lblimage = new JLabel("");
+		lblimage.setBounds(frame.getWidth() / 2 - 441, frame.getHeight() / 2 - 480, 242, 646);
+		lblimage.setIcon(new ImageIcon(
+				"C:\\Users\\Janek\\Desktop\\USARTWindowedApp-master\\USARTWindowedApp-master\\janusz.jpg"));
+		frame.getContentPane().add(lblimage);
 
-		 
-		 lblimage2 = new JLabel("");
-		 lblimage2.setBounds(frame.getWidth() / 2 - 301, frame.getHeight() / 2 - 480,
-		 242, 646);
-		 lblimage2.setIcon(new ImageIcon(
-		 "C:\\Users\\Janek\\Desktop\\USARTWindowedApp-master\\USARTWindowedApp-master\\onoff.jpg"));
-		 frame.getContentPane().add(lblimage2);
-		
-		
+		lblimage2 = new JLabel("");
+		lblimage2.setBounds(frame.getWidth() / 2 - 301, frame.getHeight() / 2 - 480, 242, 646);
+		lblimage2.setIcon(new ImageIcon(
+				"C:\\Users\\Janek\\Desktop\\USARTWindowedApp-master\\USARTWindowedApp-master\\onoff.jpg"));
+		frame.getContentPane().add(lblimage2);
+
 		// frame.getContentPane().add(new JLabel(new
 		// ImageIcon("C:\\Users\\MaTEO\\Desktop\\USART_Communication\\atmega.png")));
 	}
@@ -250,11 +241,10 @@ public class Window {
 						stateButton.setEnabled(true);
 					}
 
-					else if(state==2) {
+					else if (state == 2) {
 						directionButton.setEnabled(true);
 						stateButton.setEnabled(true);
-					}
-					else {
+					} else {
 						directionButton.setEnabled(false);
 						stateButton.setEnabled(false);
 					}
@@ -331,7 +321,7 @@ public class Window {
 						} else {
 
 						}
-					
+
 						if (e.getStateChange() == ItemEvent.SELECTED) {
 
 							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar]), '1');
@@ -474,8 +464,8 @@ public class Window {
 	}
 
 	private void initializeSelectOption() {
-		//selectOption.setBounds(14, 110, 100, 30);
-		//frame.getContentPane().add(selectOption);
+		// selectOption.setBounds(14, 110, 100, 30);
+		// frame.getContentPane().add(selectOption);
 
 		selectOption.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -518,7 +508,7 @@ public class Window {
 	private void initializeBtnstate1() {
 		for (int i = 0; i < tglbtn1.length; i++) {
 			btnstate1[i] = new JButton();
-			btnstate1[i].setBounds((frame.getWidth() / 2 - 300) + i * 47, (frame.getHeight() / 2)-65, 15, 15);
+			btnstate1[i].setBounds((frame.getWidth() / 2 - 300) + i * 47, (frame.getHeight() / 2) - 65, 15, 15);
 			// btnstate1[i].setSelected(false);
 			// btnstate1[i].setDisabledIcon(btnstate1[i].getIcon());
 			btnstate1[i].setBackground(Color.RED);
@@ -636,8 +626,6 @@ public class Window {
 						CommPortSender
 								.send(new ProtocolImpl().getMessage("READBYTE=DDR" + pName + "," + pNumber + "\r\n"));
 
-						liczniczek++;
-						System.out.println(pomiar + "dd");
 					} else {
 						JOptionPane.showMessageDialog(frame, "Choose port!", "Error", JOptionPane.ERROR_MESSAGE);
 					}
@@ -737,7 +725,6 @@ public class Window {
 		frame.getContentPane().add(directionButton);
 		directionButton.setText("Control Direction");
 		directionButton.setEnabled(false);
-		DefaultButtonModel model = (DefaultButtonModel) directionButton.getModel();
 
 		directionButton.addActionListener(new ActionListener() {
 
@@ -757,12 +744,12 @@ public class Window {
 	}
 
 	private void initializeStateButton() {
-		DefaultButtonModel model = (DefaultButtonModel) stateButton.getModel();
+
 		stateButton.setBounds((frame.getWidth() / 2 - 320), (frame.getHeight() / 2 - 250), 145, 40);
 		frame.getContentPane().add(stateButton);
 		stateButton.setText("Control State");
 		stateButton.setEnabled(false);
-		
+
 		stateButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -782,10 +769,9 @@ public class Window {
 	}
 
 	private void initializeAutoButton() {
-		DefaultButtonModel model = (DefaultButtonModel) autoButton.getModel();
 		autoButton.setBounds((frame.getWidth() / 2 - 320), (frame.getHeight() / 2 - 200), 145, 40);
-		//frame.getContentPane().add(autoButton);
-		//autoButton.setText("Automatic");
+		// frame.getContentPane().add(autoButton);
+		// autoButton.setText("Automatic");
 
 		autoButton.addActionListener(new ActionListener() {
 
@@ -836,9 +822,7 @@ public class Window {
 	}
 
 	public void setT2Text(String text) {
-		this.pomiar = text;
-		errorlabel.setEnabled(false);
-		pomiar = "di";
+		errorlabel.setText(text); //Mateusz
 		System.out.println("Odczytana temperatura: " + text);
 
 	}
