@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,8 +18,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.DocumentEvent;
@@ -43,18 +45,33 @@ public class Window {
 	private int number;
 	private String time;
 	private int state;
+	private int leds;
+	private boolean externalState = false;
+	private static int counter = 0;
 	private int[] buforek = new int[28];
+	private char[] buforek2 = new char[11];
+	private char[] buforek3 = new char[11];
+	private char[] buforek4 = new char[11];
+	private char[] buforek5 = new char[11];
 	private int z = 0;
 	private JLabel lblimage, lblimage2;
-	private final String pinsTab[] = { "23", "26", "27", "28", "29", "30", "14", "15", "31", "32", "33", "8", "22",
-			"21", "20", "19", "18", "17", "13", "12", "11", "10", "9" };
-	private final String pinTabName[] = { "C", "D", "D", "D", "D", "D", "B", "B", "D", "D", "D", "B", "C", "C", "C",
-			"C", "C", "C", "B", "B", "B", "B", "B" };
-	private final String pinTabNumber[] = { "6", "0", "1", "2", "3", "4", "6", "7", "5", "6", "7", "0", "5", "4", "3",
-			"2", "1", "0", "5", "4", "3", "2", "1" };;
+	private JLabel[] labelDirection1, labelDirection2;
+	//private final String pinsTab[] = { "28", "29", "30", "14", "15", "31", "32", "33", "8", "22", "21",
+	//		"20", "19", "18", "17", "13", "12", "11", "10", "9" };
+	private final String pinsTab[] = { "28", "29", "30", "14", "15", "31", "32", "33", "8", "22", "9",
+			"10", "11", "12", "13", "17", "18", "19", "20", "21" };
+	private final String pinTabName[] = { "D", "D", "D", "B", "B", "D", "D", "D", "B", "C", "C", "C", "C",
+			"C", "C", "B", "B", "B", "B", "B" };
+	//private final String pinTabName[] = { "D", "D", "D", "B", "B", "D", "D", "D", "B", "C", "B", "B", "B",
+//			"B", "B", "C", "C", "C", "C", "C" };
+	private final String pinTabNumber[] = { "2", "3", "4", "6", "7", "5", "6", "7", "0", "5", "4", "3", "2",
+			"1", "0", "5", "4", "3", "2", "1" };
+	//private final String pinTabNumber[] = { "2", "3", "4", "6", "7", "5", "6", "7", "0", "1", "2", "3", "4",
+	//		"5", "0", "1", "2", "3", "4", "5" };
 	private static final String NOT_SELECTABLE_OPTION = " - Select an Option - ", PORT_DIR_ONE = "PORT\\DIR_ONE",
 			PORTS_DIRS_ALL = "PORT\\DIR_ALL", MEAS = "MEASURMENT", NOT_SELECTABLE_SERIAL = " Select Serial Port ";
-	private JTextField errorlabel;
+	private static JLabel errorlabel;
+	private boolean check = true;
 
 	public Window() {
 		initialize();
@@ -82,12 +99,14 @@ public class Window {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		errorlabel = new JTextField("");
-		errorlabel.setBounds(400, 747, 153, 30);
-		errorlabel.setEnabled(false);
-		// errorlabel.setFont(new Font("Serif", Font.PLAIN, 14));
-		// s errorlabel.setHorizontalAlignment(SwingConstants.CENTER);
+		errorlabel = new JLabel("");
+		errorlabel.setBounds((frame.getWidth() / 2) - 120, 695, 203, 30);
 		frame.getContentPane().add(errorlabel);
+
+		errorlabel.setEnabled(false);
+		errorlabel.setFont(new Font("Serif", Font.BOLD, 30));
+		errorlabel.setBackground(Color.MAGENTA);
+		errorlabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		selectOption = new JTextArea();
 		initializeSelectOption();
@@ -98,17 +117,23 @@ public class Window {
 		comboBox = new JComboBox<String>();
 		initializeComboBox();
 
-		tglbtn1 = new JToggleButton[12];
+		tglbtn1 = new JToggleButton[10];
 		initializeTglbutton1();
 
-		tglbtn2 = new JToggleButton[11];
+		tglbtn2 = new JToggleButton[10];
 		initializeTglbutton2();
 
-		btnstate1 = new JButton[12];
+		btnstate1 = new JButton[10];
 		initializeBtnstate1();
 
-		btnstate2 = new JButton[11];
+		btnstate2 = new JButton[10];
 		initializeBtnstate2();
+
+		labelDirection1 = new JLabel[10];
+		initializeLabelDirection1();
+
+		labelDirection2 = new JLabel[10];
+		initializeLabelDirection2();
 
 		reset = new JButton();
 		initializeResetButton();
@@ -224,32 +249,68 @@ public class Window {
 
 				} else if (menu.getSelectedItem().toString() == PORT_DIR_ONE) {
 					selectOption.setText(null);
+
+					for (int i = 0; i < tglbtn1.length; i++) {
+					  externalState = true;
+						tglbtn1[i].setSelected(false);
+						externalState = false;
+
+					}
+					for (int i = 0; i < tglbtn2.length; i++) {
+						 externalState = true;
+						tglbtn2[i].setSelected(false);
+						externalState = false;
+					}
+					 externalState = false;
 					state = 1;
 
 				} else if (menu.getSelectedItem().toString() == PORTS_DIRS_ALL) {
 					selectOption.setText(null);
+					for (int i = 0; i < tglbtn1.length; i++) {
+						 externalState = true;
+						tglbtn1[i].setSelected(false);
+						 externalState = false;
+					}
+					for (int i = 0; i < tglbtn2.length; i++) {
+						externalState = true;
+						tglbtn2[i].setSelected(false);
+						 externalState = false;
+					}
+					 externalState = false;
 					state = 2;
 
 				} else if (menu.getSelectedItem().toString() == MEAS) {
 					selectOption.setText(null);
+					for (int i = 0; i < tglbtn1.length; i++) {
+						tglbtn1[i].setSelected(false);
+					}
+					for (int i = 0; i < tglbtn2.length; i++) {
+						tglbtn2[i].setSelected(false);
+					}
 					state = 3;
 				}
 
 				try {
 					if (state == 1) {
 						directionButton.setEnabled(true);
+						directionButton.setBackground(null);
+						stateButton.setBackground(null);
 						stateButton.setEnabled(true);
 					}
 
 					else if (state == 2) {
 						directionButton.setEnabled(true);
 						stateButton.setEnabled(true);
+						directionButton.setBackground(null);
+						stateButton.setBackground(null);
 					} else {
 						directionButton.setEnabled(false);
 						stateButton.setEnabled(false);
+						directionButton.setBackground(null);
+						stateButton.setBackground(null);
 					}
 					if (state == 2) {
-						pinSwitch.setEnabled(true);
+						
 					}
 
 					else {
@@ -279,7 +340,7 @@ public class Window {
 	private void initializeTglbutton1() {
 		for (int i = 0; i < tglbtn1.length; i++) {
 			tglbtn1[i] = new JToggleButton("P" + (i + 1));
-			tglbtn1[i].setBounds((frame.getWidth() / 2 - 318) + i * 47, (frame.getHeight() / 2 - 48), 50, 45);
+			tglbtn1[i].setBounds((frame.getWidth() / 2 - 273) + i * 47, (frame.getHeight() / 2 +2), 50, 45);
 			frame.getContentPane().add(tglbtn1[i]);
 			tglbtn1[i].addItemListener(new ItemListener() {
 				private int anonVar;
@@ -288,55 +349,83 @@ public class Window {
 				public void itemStateChanged(ItemEvent e) {
 					switch (state) {
 					case 1:
-						if (getOption().equals("P")) {
-							portDir.setCharAt(4, 'P');
-						} else if (getOption().equals("D")) {
-							portDir.setCharAt(4, 'D');
+						try {
+							check = true;
+							if (getOption().equals("P")) {
+								portDir.setCharAt(4, 'P');
+							} else if (getOption().equals("D")) {
+								portDir.setCharAt(4, 'D');
+							}
+						} catch (NullPointerException exc) {
+							JOptionPane.showMessageDialog(frame, "Choose an option!", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							check = false;
 						}
-						if (e.getStateChange() == ItemEvent.SELECTED) {
+						if (e.getStateChange() == ItemEvent.SELECTED && check == true && externalState == false) {
 
 							portDir.setCharAt(5, pinTabName[anonVar].toString().charAt(0));
 							portDir.setCharAt(7, pinTabNumber[anonVar].toString().charAt(0));
 							portDir.setCharAt(9, '1');
 							CommPortSender.send(new ProtocolImpl().getMessage(portDir.toString()));
-							btnstate1[anonVar].setBackground(Color.GREEN);
+							if (leds == 0) {
+								btnstate1[anonVar].setBackground(Color.GREEN);
+
+							} else {
+
+								labelDirection1[anonVar].setText("↑");
+							}
 							// System.out.println("i: " + anonVar);
-						} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+						} else if (e.getStateChange() == ItemEvent.DESELECTED && check == true
+								&& externalState == false) {
 							portDir.setCharAt(5, pinTabName[anonVar].toString().charAt(0));
 							portDir.setCharAt(7, pinTabNumber[anonVar].toString().charAt(0));
 							portDir.setCharAt(9, '0');
 
 							CommPortSender.send(new ProtocolImpl().getMessage(portDir.toString()));
-							btnstate1[anonVar].setBackground(Color.RED);
+							if (leds == 0) {
+								btnstate1[anonVar].setBackground(Color.RED);
+
+							} else {
+
+								labelDirection1[anonVar].setText("↓");
+							}
 						}
 
 						break;
 					case 2:
-						if (getNumber() == 0) {
-							portsDirs.setCharAt(6, '0');
-						} else if (getNumber() == 1) {
-							portsDirs.setCharAt(6, '1');
-						} else if (getNumber() == 2) {
-							portsDirs.setCharAt(6, '2');
-						} else {
+						try {
+							check = true;
+							if (getNumber() == 0) {
+								portsDirs.setCharAt(6, '0');
+							} else if (getNumber() == 1) {
+								portsDirs.setCharAt(6, '1');
+							} else if (getNumber() == 2) {
+								portsDirs.setCharAt(6, '2');
+							} else {
 
+							}
+						} catch (NullPointerException exc) {
+							JOptionPane.showMessageDialog(frame, "Choose an option!", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							check = false;
 						}
-
-						if (e.getStateChange() == ItemEvent.SELECTED) {
+						if (e.getStateChange() == ItemEvent.SELECTED && check == true && externalState == false) {
 
 							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar]), '1');
 
 							// CommPortSender.send(new ProtocolImpl().getMessage(portsDirs.toString()));
-							btnstate1[anonVar].setBackground(Color.GREEN);
 
-						} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+						} else if (e.getStateChange() == ItemEvent.DESELECTED && check == true
+								&& externalState == false) {
 							buforek[anonVar] = 0;
 							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar]), '0');
 
 							// CommPortSender.send(new ProtocolImpl().getMessage(portsDirs.toString()));
-							btnstate1[anonVar].setBackground(Color.RED);
+
 						}
+
 						break;
+
 					case 3:
 						if (e.getStateChange() == ItemEvent.SELECTED) {
 
@@ -369,13 +458,13 @@ public class Window {
 	}
 
 	private void initializeTglbutton2() {
-		int j = 23;
+		int j = 11;
 		for (int i = 0; i < tglbtn2.length; i++) {
 
 			tglbtn2[i] = new JToggleButton("P" + j);
-			tglbtn2[i].setBounds((frame.getWidth() / 2 - 273) + i * 47, (frame.getHeight() / 2 + 48), 50, 45);
+			tglbtn2[i].setBounds((frame.getWidth() / 2 - 273) + i * 47, (frame.getHeight() / 2 + 98), 50, 45);
 			frame.getContentPane().add(tglbtn2[i]);
-			j--;
+			j++;
 			tglbtn2[i].addItemListener(new ItemListener() {
 				private int anonVar;
 
@@ -383,63 +472,87 @@ public class Window {
 				public void itemStateChanged(ItemEvent e) {
 					switch (state) {
 					case 1:
-						if (getOption().equals("P")) {
-							portDir.setCharAt(4, 'P');
-						} else if (getOption().equals("D")) {
-							portDir.setCharAt(4, 'D');
+						try {
+							check = true;
+							if (getOption().equals("P")) {
+								portDir.setCharAt(4, 'P');
+							} else if (getOption().equals("D")) {
+								portDir.setCharAt(4, 'D');
+							}
+						} catch (NullPointerException exc) {
+							JOptionPane.showMessageDialog(frame, "Choose an option!", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							check = false;
 						}
-						if (e.getStateChange() == ItemEvent.SELECTED) {
+						if (e.getStateChange() == ItemEvent.SELECTED && check == true && externalState == false) {
 
-							portDir.setCharAt(5, pinTabName[anonVar + 12].toString().charAt(0));
-							portDir.setCharAt(7, pinTabNumber[anonVar + 12].toString().charAt(0));
+							portDir.setCharAt(5, pinTabName[anonVar + 10].toString().charAt(0));
+							portDir.setCharAt(7, pinTabNumber[anonVar + 10].toString().charAt(0));
 							portDir.setCharAt(9, '1');
 							CommPortSender.send(new ProtocolImpl().getMessage(portDir.toString()));
-							btnstate2[anonVar].setBackground(Color.GREEN);
+							if (leds == 0) {
+								btnstate2[anonVar].setBackground(Color.GREEN);
+							} else {
+								labelDirection2[anonVar].setText("↑");
+							}
 							// System.out.println("i: " + anonVar);
-						} else if (e.getStateChange() == ItemEvent.DESELECTED) {
-							portDir.setCharAt(5, pinTabName[anonVar + 12].toString().charAt(0));
-							portDir.setCharAt(7, pinTabNumber[anonVar + 12].toString().charAt(0));
+						} else if (e.getStateChange() == ItemEvent.DESELECTED && check == true
+								&& externalState == false) {
+							portDir.setCharAt(5, pinTabName[anonVar + 10].toString().charAt(0));
+							portDir.setCharAt(7, pinTabNumber[anonVar + 10].toString().charAt(0));
 							portDir.setCharAt(9, '0');
 
 							CommPortSender.send(new ProtocolImpl().getMessage(portDir.toString()));
-							btnstate2[anonVar].setBackground(Color.RED);
+							if (leds == 0) {
+								btnstate2[anonVar].setBackground(Color.RED);
+							} else {
+								labelDirection2[anonVar].setText("↓");
+							}
 						}
 
 						break;
 					case 2:
-						if (getNumber() == 0) {
-							portsDirs.setCharAt(6, '0');
-						} else if (getNumber() == 1) {
-							portsDirs.setCharAt(6, '1');
-						} else if (getNumber() == 2) {
-							portsDirs.setCharAt(6, '2');
-						} else {
+						try {
+							check = true;
+							if (getNumber() == 0) {
+								portsDirs.setCharAt(6, '0');
+							} else if (getNumber() == 1) {
+								portsDirs.setCharAt(6, '1');
+							} else if (getNumber() == 2) {
+								portsDirs.setCharAt(6, '2');
+							} else {
 
+							}
+						} catch (NullPointerException exc) {
+							JOptionPane.showMessageDialog(frame, "Choose an option!", "Error",
+									JOptionPane.ERROR_MESSAGE);
+							check = false;
 						}
 						if (time != null) {
 							portsDirs.setCharAt(35, time.charAt(0));
 						}
-						if (e.getStateChange() == ItemEvent.SELECTED) {
+						if (e.getStateChange() == ItemEvent.SELECTED && check == true && externalState == false) {
 
-							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar + 12]), '1');
+							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar + 10]), '1');
 
 							// CommPortSender.send(new ProtocolImpl().getMessage(portsDirs.toString()));
-							btnstate2[anonVar].setBackground(Color.GREEN);
+
 							// System.out.println("i: " + anonVar);
-						} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+						} else if (e.getStateChange() == ItemEvent.DESELECTED && check == true
+								&& externalState == false) {
 							buforek[anonVar] = 0;
-							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar + 12]), '0');
+							portsDirs.setCharAt(Integer.parseInt(pinsTab[anonVar + 10]), '0');
 
 							// CommPortSender.send(new ProtocolImpl().getMessage(portsDirs.toString()));
-							btnstate2[anonVar].setBackground(Color.RED);
+
 						}
 						break;
 					case 3:
 						if (e.getStateChange() == ItemEvent.SELECTED) {
 
 							if (z == 0) {
-								pName = pinTabName[anonVar + 12];
-								pNumber = pinTabNumber[anonVar + 12];
+								pName = pinTabName[anonVar + 10];
+								pNumber = pinTabNumber[anonVar + 10];
 								z = 1;
 							} else {
 								JOptionPane.showMessageDialog(frame, "ONE port!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -508,9 +621,9 @@ public class Window {
 	private void initializeBtnstate1() {
 		for (int i = 0; i < tglbtn1.length; i++) {
 			btnstate1[i] = new JButton();
-			btnstate1[i].setBounds((frame.getWidth() / 2 - 300) + i * 47, (frame.getHeight() / 2) - 65, 15, 15);
-			// btnstate1[i].setSelected(false);
-			// btnstate1[i].setDisabledIcon(btnstate1[i].getIcon());
+			btnstate1[i].setBounds((frame.getWidth() / 2 - 255) + i * 47, (frame.getHeight() / 2) - 15, 15, 15);
+			btnstate1[i].setSelected(false);
+			btnstate1[i].setDisabledIcon(btnstate1[i].getIcon());
 			btnstate1[i].setBackground(Color.RED);
 			frame.getContentPane().add(btnstate1[i]);
 			btnstate1[i].addItemListener(new ItemListener() {
@@ -526,7 +639,7 @@ public class Window {
 	private void initializeBtnstate2() {
 		for (int i = 0; i < btnstate2.length; i++) {
 			btnstate2[i] = new JButton();
-			btnstate2[i].setBounds((frame.getWidth() / 2 - 255) + i * 47, (frame.getHeight() / 2) + 35, 15, 15);
+			btnstate2[i].setBounds((frame.getWidth() / 2 - 255) + i * 47, (frame.getHeight() / 2) + 83, 15, 15);
 			btnstate2[i].setSelected(false);
 			btnstate2[i].setDisabledIcon(btnstate2[i].getIcon());
 			btnstate2[i].setBackground(Color.RED);
@@ -541,6 +654,30 @@ public class Window {
 		}
 	}
 
+	private void initializeLabelDirection1() {
+		for (int i = 0; i < tglbtn1.length; i++) {
+			labelDirection1[i] = new JLabel("↓");
+			labelDirection1[i].setBounds((frame.getWidth() / 2 - 264) + i * 47, (frame.getHeight() / 2) - 35, 35, 15);
+			labelDirection1[i].setFont(new Font("Serif", Font.BOLD, 20));
+			labelDirection1[i].setHorizontalAlignment(SwingConstants.CENTER);
+			labelDirection1[i].setDisabledIcon(labelDirection1[i].getIcon());
+			frame.getContentPane().add(labelDirection1[i]);
+
+		}
+	}
+
+	private void initializeLabelDirection2() {
+		for (int i = 0; i < tglbtn2.length; i++) {
+			labelDirection2[i] = new JLabel("↓");
+			labelDirection2[i].setBounds((frame.getWidth() / 2 - 264) + i * 47, (frame.getHeight() / 2) + 62, 35, 15);
+			labelDirection2[i].setFont(new Font("Serif", Font.BOLD, 20));
+			labelDirection2[i].setHorizontalAlignment(SwingConstants.CENTER);
+			labelDirection2[i].setDisabledIcon(labelDirection2[i].getIcon());
+			frame.getContentPane().add(labelDirection2[i]);
+
+		}
+	}
+
 	private void initializeResetButton() {
 		reset.setBounds((frame.getWidth() / 2 - 480), (frame.getHeight() / 2 + 300), 145, 40);
 		frame.getContentPane().add(reset);
@@ -549,6 +686,14 @@ public class Window {
 		reset.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+				for (int i = 0; i < tglbtn1.length; i++) {
+					tglbtn1[i].setSelected(false);
+					tglbtn2[i].setSelected(false);
+					btnstate1[i].setBackground(Color.RED);
+					btnstate2[i].setBackground(Color.RED);
+					labelDirection1[i].setText("↓");
+					labelDirection2[i].setText("↓");
+				}
 
 				CommPortSender.send(new ProtocolImpl().getMessage("RST?\r\n"));
 			}
@@ -639,7 +784,7 @@ public class Window {
 	}
 
 	private void initializePinSwitch() {
-		pinSwitch.setBounds((frame.getWidth() / 2 - 80), (frame.getHeight() / 2 - 450), 145, 40);
+		pinSwitch.setBounds((frame.getWidth() / 2 - 90), (frame.getHeight() / 2 - 450), 145, 40);
 		frame.getContentPane().add(pinSwitch);
 		pinSwitch.setText("SWITCH");
 		pinSwitch.setEnabled(false);
@@ -682,7 +827,28 @@ public class Window {
 								}
 							}
 						}
+						for (int i = 0; i < tglbtn1.length; i++) {
+							if (tglbtn1[i].isSelected() == true) {
+								if (leds == 0) {
+									btnstate1[i].setBackground(Color.GREEN);
+								} else {
+									labelDirection1[i].setText("↑");
+								}
 
+							}
+
+						}
+						for (int i = 0; i < tglbtn2.length; i++) {
+							if (tglbtn2[i].isSelected() == true) {
+								if (leds == 0) {
+									btnstate2[i].setBackground(Color.GREEN);
+								} else {
+									labelDirection2[i].setText("↑");
+								}
+
+							}
+
+						}
 						try {
 							CommPortSender.send(new ProtocolImpl().getMessage(portsDirs.toString()));
 						} catch (NullPointerException exc) {
@@ -697,7 +863,28 @@ public class Window {
 					} else if (e.getStateChange() == ItemEvent.DESELECTED) {
 
 						change1to0(portsDirs.toString());
+						for (int i = 0; i < tglbtn1.length; i++) {
+							if (tglbtn1[i].isSelected() == true) {
+								if (leds == 0) {
+									btnstate1[i].setBackground(Color.RED);
+								} else {
+									labelDirection1[i].setText("↓");
+								}
 
+							}
+
+						}
+						for (int i = 0; i < tglbtn2.length; i++) {
+							if (tglbtn2[i].isSelected() == true) {
+								if (leds == 0) {
+									btnstate2[i].setBackground(Color.RED);
+								} else {
+									labelDirection2[i].setText("↓");
+								}
+
+							}
+
+						}
 						try {
 							CommPortSender.send(new ProtocolImpl().getMessage(portsDirs.toString()));
 						} catch (NullPointerException exc) {
@@ -729,11 +916,55 @@ public class Window {
 		directionButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+
+				directionButton.setBackground(Color.GREEN);
+				stateButton.setBackground(null);
+				leds = 1;
 				if (state == 1) {
 
+					externalState = false;
+					for (int i = 0; i < tglbtn1.length; i++) {
+
+						if (tglbtn1[i].isSelected() == true) {
+							externalState = true;
+							tglbtn1[i].setSelected(false);
+							buforek2[i] = 'c';
+						}
+
+					}
+					externalState = false;
+					for (int i = 0; i < tglbtn2.length; i++) {
+						if (tglbtn2[i].isSelected() == true) {
+							externalState = true;
+							tglbtn2[i].setSelected(false);
+							externalState = false;
+							buforek4[i] = 'c';
+						}
+					}
+
 					option = "D";
+					externalState = false;
+					for (int i = 0; i < buforek3.length; i++) {
+
+						if (buforek3[i] == 'c') {
+							externalState = true;
+
+							tglbtn1[i].setSelected(true);
+							externalState = false;
+							buforek3[i] = 0;
+						}
+						if (buforek5[i] == 'c') {
+							externalState = true;
+							tglbtn2[i].setSelected(true);
+							externalState = false;
+							buforek5[i] = 0;
+						}
+
+					}
+					externalState = false;
 				} else if (state == 2) {
 					number = 1;
+					pinSwitch.setEnabled(true);
 				} else {
 					JOptionPane.showMessageDialog(frame, "Choose from menu proper option!", "Error",
 							JOptionPane.ERROR_MESSAGE);
@@ -753,11 +984,56 @@ public class Window {
 		stateButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
+
+				stateButton.setBackground(Color.GREEN);
+				directionButton.setBackground(null);
+				leds = 0;
 				if (state == 1) {
 
+					externalState = false;
+					for (int i = 0; i < tglbtn1.length; i++) {
+						if (tglbtn1[i].isSelected() == true) {
+							externalState = true;
+							tglbtn1[i].setSelected(false);
+							externalState = false;
+							buforek3[i] = 'c';
+						}
+
+					}
+
+					for (int i = 0; i < tglbtn2.length; i++) {
+						if (tglbtn2[i].isSelected() == true) {
+							externalState = true;
+							tglbtn2[i].setSelected(false);
+							externalState = false;
+							buforek5[i] = 'c';
+
+						}
+					}
+
 					option = "P";
+					externalState = false;
+					for (int i = 0; i < buforek2.length; i++) {
+
+						if (buforek2[i] == 'c') {
+							externalState = true;
+							tglbtn1[i].setSelected(true);
+							externalState = false;
+							buforek2[i] = 0;
+
+						}
+						if (buforek4[i] == 'c') {
+							externalState = true;
+							tglbtn2[i].setSelected(true);
+							externalState = false;
+							buforek4[i] = 0;
+						}
+
+					}
+					externalState = false;
 				} else if (state == 2) {
 					number = 0;
+					pinSwitch.setEnabled(true);
 				} else {
 					JOptionPane.showMessageDialog(frame, "Choose from menu proper option!", "Error",
 							JOptionPane.ERROR_MESSAGE);
@@ -791,7 +1067,7 @@ public class Window {
 
 	}
 
-	public String extractDigits(String src) {
+	public static String extractDigits(String src) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < src.length(); i++) {
 			char c = src.charAt(i);
@@ -812,6 +1088,7 @@ public class Window {
 					if (i != 6) {
 						buforek[j] = i;
 						portsDirs.setCharAt(i, '0');
+
 						j++;
 					}
 				}
@@ -821,10 +1098,13 @@ public class Window {
 
 	}
 
-	public void setT2Text(String text) {
-		errorlabel.setText(text); ///Mateusz
-		System.out.println("Odczytana temperatura: " + text);
+	public static void setT2Text(String text) {
+		counter++;
 
+		double temp = Double.parseDouble(text);
+		temp = Math.round(temp * 10.0) / 10.0;
+		errorlabel.setText("TEMP" + counter + ":" + Double.toString(temp));
+		System.out.println("Odczytana temperatura: " + (temp));
 	}
 
 	public int getNumber() {

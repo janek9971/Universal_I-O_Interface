@@ -24,7 +24,7 @@ public class ProtocolImpl implements Protocol {
     private void onMessage() {  
         if (tail!=0) {  
             // constructing message  
-        	Window Wobject = new Window();
+        	//Window Wobject = new Window();
         	
         	String message = getMessage(buffer, tail);  
         
@@ -32,7 +32,7 @@ public class ProtocolImpl implements Protocol {
         		if(message.contains("READ")) {
         		try {
         			
-        			wartosc =Integer.parseInt(Wobject.extractDigits(message));
+        			wartosc =Integer.parseInt(Window.extractDigits(message));
         			bufor[state]=wartosc;     			
         		
         		
@@ -47,7 +47,7 @@ public class ProtocolImpl implements Protocol {
         	if(state==2) {
 				float temp;
 				temp = (bufor[0]+(bufor[1]*256))/16;
-				Wobject.setT2Text(Float.toString(temp)); ///Mateusz
+				Window.setT2Text(Float.toString(temp)); ///Mateusz
 				
 				state=0;
 			}
